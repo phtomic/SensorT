@@ -4,7 +4,6 @@ import { env } from "../framework/Domain/App/Globals";
 
 export class NetworkConfig {
    public api = {
-      auth: true,
       port: parseInt(env('HTTP_API_PORT', "8181")),
       socketio: true
    };

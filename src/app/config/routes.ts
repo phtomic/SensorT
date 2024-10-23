@@ -1,4 +1,5 @@
 "use strict";
+
 export class Routes {
     public starts: Array<string> = ["Api"]
     public qrEndpoint = ""
@@ -6,7 +7,8 @@ export class Routes {
     public redirects?: Object;
     constructor() {
         this.api = {
-            
+            middleware: [],
+            routes: { }
         };
     }
 }
