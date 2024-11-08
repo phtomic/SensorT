@@ -6,7 +6,6 @@ import { Routes } from "../../../config/routes";
 import { NetworkConfig } from "../../../config/network";
 import { LogsController } from "./Logs";
 import { MigrationsController } from "../Database/Domain/MigrationsController";
-import { SocketTask } from "../Routing/Plugins/SocketTask";
 import { Kernel } from "./Kernel";
 
 export class App {
@@ -48,8 +47,6 @@ export class App {
             const router = new RoutesController(controller.getRouter(), route);
             // Inicia o servidor para a rota especificada na porta definida nas configurações
             router.listen(config.port);
-            const io = router.getIo()
-            if (io && this.kernel.canTask) new SocketTask().setIo(io)
             return;
         }
         console.debug(`No routes configured for ${pointer}`);

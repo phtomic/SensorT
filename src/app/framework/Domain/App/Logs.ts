@@ -1,7 +1,6 @@
 import axios from "axios";
 import { parseDate } from "../Plugins/DateParser";
 import { APP_SESSION, APP_VERSION } from "../../../config/constants";
-import Logs from '../Database/Domain/LogsModel';
 import { Kernel } from "./Kernel";
 import { env } from "./Globals";
 export class LogsController {
@@ -31,13 +30,7 @@ export class LogsController {
     }
     private exitHandler(message: any, options: any, origin: string) {
         if (this.ignoredErrors.map(error => message.toString().includes(error)).includes(true)) return true;
-        let errorLog = ""
-        if (options.cleanup) {
-            errorLog = "Desligamento do sistema - ".concat(message.toString())
-        } else {
-            errorLog = message.toString()
-        }
-        errorLog = errorLog.concat(" (", origin, ")")
+        let errorLog = `${options.cleanup ? `Desligamento do sistema - ${message.toString()}` : message.toString()} (${origin})`
         if (this.lastErrorLog.error !== errorLog || this.lastErrorLog.timeout < (Date.now() + 100)) {
             this.lastErrorLog = {
                 timeout: Date.now() + 2000,
@@ -61,7 +54,7 @@ export class LogsController {
                 console.log("".concat("[", controller.toUpperCase(), "]", "PRIOR: ", priority.toString(), " - ", message));
                 // Cria uma nova instância do modelo de Logs e salva o log no banco de dados
                 if (['info', 'error'].includes(type)) {
-                    let uri = optionalParams?.discord || env('DISCORD')
+                    const uri = optionalParams?.discord || env('DISCORD')
                     if (uri)
                         await axios.post(uri, {
                             content: 'Aplicacao: '.concat(controller.toUpperCase()),
@@ -81,13 +74,6 @@ export class LogsController {
                             ]
                         }).catch((err) => console.log(err.code))
                 }
-                //Logs().create({
-                //    type: type,
-                //    logMessage: message,
-                //    path: controller,
-                //    priority: priority,
-                //    time: Date.now()
-                //})
             };
             console[type] = this.logger[type]
         }

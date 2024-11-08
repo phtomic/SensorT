@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync } from "fs";
 
 export class PackagesBuilder {
     public prepare() {
-        let package_json = JSON.parse(readFileSync(`${process.cwd()}/package.json`,'utf-8'))
+        const package_json = JSON.parse(readFileSync(`${process.cwd()}/package.json`,'utf-8'))
         const new_package_json_file = {
             dependencies: package_json.dependencies,
             command: "ts-node-dev src/index.ts",

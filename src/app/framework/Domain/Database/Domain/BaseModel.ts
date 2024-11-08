@@ -36,10 +36,7 @@ export default class BaseModel<T, ModelMethods = {}> {
         
         if (!this.model) this.model = build<WithAppId<T>, WithAppId<T> & BaseModel<WithAppId<T>> & ModelMethods>(
             this,
-            methods.map((method) => ([method.toString(), (...args: any[]) => {
-                ConnectDatabase('main')
-                return this[method.toString()](...args)
-            }]))
+            methods.map((method) => ([method.toString(), (...args: any[]) =>  this[method.toString()](...args)]))
         );
         return (type = 'main') => {
             ConnectDatabase(type)
@@ -77,7 +74,7 @@ export default class BaseModel<T, ModelMethods = {}> {
 }
 
 function build<T, ModMethods>(schema: BaseModel<any>, methods: Array<[string, any]>) {
-    let nSchema = new mongoose.Schema<T>({
+    const nSchema = new mongoose.Schema<T>({
         ...schema.fields,
         created: Date,
         updated: Date
@@ -90,6 +87,5 @@ function build<T, ModMethods>(schema: BaseModel<any>, methods: Array<[string, an
         ]
     })
     methods.forEach(k => nSchema.static(k[0], (...args) => k[1](...args)))
-    let model = (mongoose.models[schema.collection_name] || mongoose.model(schema.collection_name, nSchema)) as ModMethods & Model<T>
-    return model
+    return (mongoose.models[schema.collection_name] || mongoose.model(schema.collection_name, nSchema)) as ModMethods & Model<T>
 }

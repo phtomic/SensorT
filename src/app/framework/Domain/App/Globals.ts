@@ -1,9 +1,5 @@
-import { AxiosController } from "../Plugins/Axios";
-import { existsSync, readFileSync, writeFileSync } from "fs";
-import Crypt from '../Plugins/Crypt';
-
 import { config } from "dotenv";
-export const env = (field, def?) => config().parsed?.[field] ||  null || def;
+export const env = (field: string, def?: any) => config().parsed?.[field] || null || def;
 export enum TokenTypes {
     SPA = "spa",
     BEARER = "bearer",

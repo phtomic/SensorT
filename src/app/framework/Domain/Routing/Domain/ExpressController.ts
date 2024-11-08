@@ -3,10 +3,6 @@ import cookieParser from 'cookie-parser';
 
 import express, { Express, Request, Response, NextFunction } from 'express'
 import path from 'path';
-import ApiTokens, { ApiTokensInterface } from '../../../../models/ApiTokens';
-import { ENABLE_MULTITENANCY } from '../../../../config/constants';
-import AppInstances from '../../Database/Domain/AppInstances';
-import { Types } from 'mongoose';
 import { getStorage, SessionStorage, setStorage } from '../Plugins/SessionStorage';
 
 export class ExpressController {
@@ -44,11 +40,6 @@ export class ExpressController {
                 setStorage('request', req);
                 setStorage('response', res);
                 setStorage('originalUrl', req?.originalUrl);
-                res.locals.data = req.cookies.data;
-                res.locals.error = req.cookies.error;
-                // Limpa os cookies de erro e dados
-                res.cookie('error', null, { maxAge: 0, httpOnly: true, sameSite: 'none', secure: true })
-                res.cookie('data', null, { maxAge: 0, httpOnly: true, sameSite: 'none', secure: true })
                 next();
             })
         });

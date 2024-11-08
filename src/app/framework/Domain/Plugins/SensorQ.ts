@@ -1,22 +1,26 @@
 import client, { Channel, Connection } from "amqplib";
 import * as ConsumerList from "../../../config/amqp";
 import { env } from "../App/Globals";
+
+const getConnectionEnv = () => ({
+    username: env('SENSORQ_USER') || env('RABBITMQ_USER', ''),
+    password: env('SENSORQ_PASS') || env('RABBITMQ_PASS', ''),
+    host: env('SENSORQ_HOST') || env('RABBITMQ_HOST', 'rabbitmq'),
+    port: env('SENSORQ_PORT') || env('RABBITMQ_PORT', '5672')
+})
+
 class RabbitMQConnection {
     connection!: Connection;
     channel!: Channel;
     private connected!: Boolean;
 
-    async connect() {
+    async connect(conn) {
         if (this.connected && this.channel) return;
         else this.connected = true;
         try {
-            let rmqUser = env('RABBITMQ_USER', '')
-            let rmqHost = env('RABBITMQ_HOST', 'rabbitmq')
-            let rmqPass = env('RABBITMQ_PASS', '')
-            let rmqPort = env('RABBITMQ_PORT', '5672')
-            console.log(`⌛️ Connecting to Rabbit-MQ Server`);
+            console.debug(`⌛️ Connecting to Rabbit-MQ Server`);
             this.connection = await client.connect(
-                `amqp://${rmqUser}:${rmqPass}@${rmqHost}:${rmqPort}`
+                `amqp://${conn.username}:${conn.password}@${conn.host}:${conn.port}`
             );
             console.debug(`✅ Rabbit MQ Connection is ready`);
 
@@ -27,17 +31,17 @@ class RabbitMQConnection {
         }
     }
 
-    async queue(queue: string, message: any) {
+    async queue(queue: string, message: any, conn) {
         try {
-            if (!this.channel) await this.connect();
+            if (!this.channel) await this.connect(conn);
             this.channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)));
         } catch (error) {
             console.error(error);
         }
     }
 
-    async consume(queue: string, QueueConsumer: Consumer) {
-        if (!this.channel) await this.connect();
+    async consume(queue: string, QueueConsumer: Consumer, conn) {
+        if (!this.channel) await this.connect(conn);
         await this.channel.assertQueue(queue, { durable: true });
         this.channel.consume(queue,
             async (msg) => {
@@ -52,12 +56,14 @@ class RabbitMQConnection {
 class Consumer {
     public queue_name!: string;
     public consumer_name!: string;
+
     public async handle(msg: client.Message): Promise<any> { }
 }
 export type SensorQConsumerList = Array<typeof Consumer>
-function consume(queue?: string) {
+function consume(queue?: string, connection?: { username: any; password: any; host: any; port: any; }) {
+    if (!connection) connection = getConnectionEnv()
     const mq = new RabbitMQConnection()
-    let queue_exist = (queue?.length || 0) > 0
+    const queue_exist = (queue?.length || 0) > 0
     ConsumerList.default
         .filter(c => c)
         .map(consumer => new consumer())
@@ -67,11 +73,12 @@ function consume(queue?: string) {
                 consumer.consumer_name &&
                 consumer.queue_name
             )
-                mq.consume(consumer.queue_name, consumer)
+                mq.consume(consumer.queue_name, consumer, connection)
         })
 }
-function send(queue: string, message: any) {
-    new RabbitMQConnection().queue(queue, message)
+function send(queue: string, message: any, connection?: { username: any; password: any; host: any; port: any; }) {
+    if (!connection) connection = getConnectionEnv()
+    new RabbitMQConnection().queue(queue, message, connection)
 }
 const SensorQ = {
     consume,

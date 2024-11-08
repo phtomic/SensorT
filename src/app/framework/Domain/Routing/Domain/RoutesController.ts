@@ -1,7 +1,6 @@
 import { Express, Request, Response } from "express";
 import { Server } from "socket.io";
 import * as http from "http"
-import { BaseController } from "./BaseController";
 export class RoutesController {
 
     private Router: Express;
@@ -24,36 +23,23 @@ export class RoutesController {
         this.server.listen(port);
     }
 
-    public getIo() {
-        return this.io
-    }
+    private initRoutes(routes: any) {
 
-    private initRoutes(routes: Object) {
-        if (routes['socket.io']) {
-            let socketIoConfig = routes['socket.io']
-            Object.keys(socketIoConfig).forEach((config) => {
-                Object.keys(socketIoConfig[config]).forEach((element: any) => {
-                    let routing = socketIoConfig[config][element]
-                    try {
-                        this.io![element.toString().toLowerCase()](element[0], element[1])
-                    } catch (err) { console.info("Rota nao encontrada: ".concat("socket_io-", config, "-", element, " | ", JSON.stringify(routing))) }
-                });
-            })
-        }
-        Object.keys(routes['routes']).forEach((prefix) => {
+
+        Object.keys(routes?.routes).forEach((prefix) => {
             try {
-                let path = routes['routes'][prefix]
-                let apiMiddlewares: Array<any> = routes['middleware'] || []
+                const path = routes.routes[prefix]
+                const apiMiddlewares: Array<any> = routes.middleware || []
                 if (!Array.isArray(path) && typeof path === "object") {
                     Object.keys(path).forEach(routeType => {
                         Object.keys(path[routeType]).forEach(async (route) => {
-                            let routeTypeMiddlewares = [
+                            const routeTypeMiddlewares = [
                                 ...apiMiddlewares,
                                 ...path?.middlewares || []
                             ]
-                            let tmp = path?.[routeType]?.[route]
+                            const tmp = path?.[routeType]?.[route]
                             if (routeType == "redirect")
-                                return this.Router[tmp[0].toLowerCase()]('/' + route, (req: Request, res: Response) => {
+                                return this.Router[tmp[0].toLowerCase()](`/${route}`, (req: Request, res: Response) => {
                                     res.redirect(tmp[1])
                                 });
 
@@ -62,7 +48,7 @@ export class RoutesController {
                                 ...routeTypeMiddlewares,
                                 ...tmp[2]?.middlewares || []
                             ]
-                            let pointer = `/${prefix}/${route}`
+                            const pointer = `/${prefix}/${route}`
                             middlewares.forEach((middleware) => {
                                 this.Router.use(pointer, async (req, res, next) => {
                                     try{
@@ -79,7 +65,6 @@ export class RoutesController {
                                 async (request: Request, response: Response) => {
                                     try {
                                         const c = new tmp[0](request, response)
-                                        if (!(c instanceof BaseController)) return console.info(`${tmp[0].name} not a controller class`);
                                         if (c[tmp[1]] == undefined) return console.info(`Route not found: ${tmp[0].name} - ${tmp[1]}`);
                                         c[tmp[1]](request, response)
                                     } catch (err: any) {
@@ -94,7 +79,7 @@ export class RoutesController {
                     this.Router[path[0].toLowerCase()](path[1], (request: Request, response: Response) => path[2](request, response))
                 }
             } catch (err) {
-                console.log(err)
+                console.error(err)
             }
         })
     }

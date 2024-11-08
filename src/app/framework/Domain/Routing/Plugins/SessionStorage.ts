@@ -1,18 +1,18 @@
 import { AsyncLocalStorage } from 'async_hooks'
 const Session = new AsyncLocalStorage()
-export function getStorage<T>(key): T {
+export function getStorage<T>(key: string): T {
     let rst: T | undefined = undefined
     try {
-        let store: any = Session.getStore()
+        const store: any = Session.getStore()
         if (store)
             rst = Session.run(store, () => store.get(key));
     } catch (err) { }
     return rst!
 }
-export function setStorage<T>(key, value): T {
+export function setStorage<T>(key: string, value: T): T {
     let rst: T | undefined = undefined
     try {
-        let store: any = Session.getStore()
+        const store: any = Session.getStore()
         if (store)
             rst = Session.run(store, () => store.set(key, value));
     } catch (err) { }
