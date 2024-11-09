@@ -8,7 +8,7 @@ import { LogsController } from "./Logs";
 import { MigrationsController } from "../Database/Domain/MigrationsController";
 import { Kernel } from "./Kernel";
 
-export class App {
+export default class App {
     private routes: Routes;
     private networkConfig: NetworkConfig;
     private kernel: Kernel
