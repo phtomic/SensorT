@@ -1,4 +1,4 @@
-import { SensorQConsumerList } from '../framework/Domain/Plugins/SensorQ';
+import { SensorQConsumerList } from "../../framework/Domain/Plugins/SensorQ";
 
 export default [
 /*

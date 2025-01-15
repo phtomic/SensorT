@@ -1,4 +1,4 @@
-import { SensorCronList } from "../framework/Domain/Plugins/SensorCron";
+import { SensorCronList } from "../../framework/Domain/Plugins/SensorCron";
 
 export default [
 /*

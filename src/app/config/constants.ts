@@ -1,5 +1,5 @@
-import { env } from "../framework/Domain/App/Globals";
-import { UUIDGenerator } from "../framework/Domain/Plugins/UUIDGenerator"
+import { env } from "SensorT/App";
+import { UUIDGenerator } from "SensorT/Plugins";
 
 export const APP_VERSION = "1.1.6"
 export const APP_SESSION = new UUIDGenerator().generate()

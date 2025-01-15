@@ -1,11 +1,10 @@
 "use strict";
 
-import { env } from "../framework/Domain/App/Globals";
+import { env } from "SensorT/App";
 
 export class NetworkConfig {
    public api = {
-      port: parseInt(env('HTTP_API_PORT', "8181")),
-      socketio: true
+      port: parseInt(env('HTTP_API_PORT', "8181"))
    };
    public notificationsTick: number = 0;
 }

@@ -1,0 +1,1 @@
+export { BaseController, RoutePaths } from "../../Domain/Routing/Domain/BaseController";

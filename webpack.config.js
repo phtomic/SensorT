@@ -1,15 +1,17 @@
 'use strict';
-import nodeExternals from 'webpack-node-externals';
-
-export const mode = "production";
-export const entry = './build/index.js';
-export const output = {
-    filename: './index.js', // <-- Important
-    libraryTarget: 'this' // <-- Important
+var nodeExternals = require('webpack-node-externals');
+module.exports = {
+    mode: "production",
+    entry: './build/index.js',
+    output: {
+        filename: './index.js', // <-- Important
+        libraryTarget: 'this' // <-- Important
+    },
+    target: 'node', // <-- Important
+    resolve: {
+        extensions: ['.ts', '.tsx', '.js']
+    },
+    plugins: [
+    ],
+    externals: [nodeExternals()]
 };
-export const target = 'node';
-export const resolve = {
-    extensions: ['.ts', '.tsx', '.js']
-};
-export const plugins = [];
-export const externals = [nodeExternals()];

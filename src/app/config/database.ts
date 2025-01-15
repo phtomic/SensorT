@@ -1,4 +1,5 @@
-import { env } from "../framework/Domain/App/Globals";
+import { env } from "SensorT/App";
+
 export default {
     default:{
         username: env('DB_USER', ""),

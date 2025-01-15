@@ -1,3 +1,4 @@
-"use strict";
-import App from "./app/framework/Domain/App";
+'use strict';
+import 'module-alias/register';
+import { App } from 'SensorT/App';
 new App();
