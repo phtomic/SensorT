@@ -1,11 +1,12 @@
 {
-    "name": "sensort-app",
-    "main": "dist/index.js",
-    "bin": "dist/index.js",
+    "name": "sensort",
+    "version": "1.1.5",
+    "bin": {
+        "sensort": "./bin/index.js"
+    },
     "scripts": {
         "configure": "npm install -y",
-        "copy_packages": "cp ./package.json ./dist/package.json && cp ./package-lock.json ./dist/package-lock.json",
-        "build": "tsc && comander prepare:build && webpack && npm run copy_packages",
+        "build": "tsc",
         "start": "ts-node-dev src/index.ts",
         "command": "ts-node-dev src/index.ts"
     },
@@ -23,7 +24,7 @@
         "deep-diff": "^1.0.2",
         "dotenv": "^16.4.5",
         "express": "^4.19.1",
-        "module-alias": "^2.2.3",
+        "lodash": "^4.17.21",
         "mongoose": "^8.8.1",
         "ts-md5": "^1.3.1",
         "ts-node": "^10.9.1",
@@ -50,12 +51,15 @@
         "webpack-cli": "^5.1.1",
         "webpack-node-externals": "^3.0.0"
     },
-    "pkg": {
-        "scripts": "./build/**/*",
-        "outputPath": "dist",
-        "name": "sensort-app"
+    "repository": {
+        "type": "git",
+        "url": "github.com/phtomic/SensorT"
     },
-    "_moduleAliases": {
-        "SensorT": "./src/framework/exports"
-    }
+    "keywords": [
+        "typescrint",
+        "framework"
+    ],
+    "author": "phtomic",
+    "license": "ISC",
+    "description": ""
 }

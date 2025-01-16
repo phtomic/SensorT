@@ -99,12 +99,9 @@
     }
   },
   "exclude": [
-    "./dist/**/*",
+    "bin/**/*",
     "./build/**/*",
     "./node_modules/**/*",
-    "./.docker/**/*",
-    "./webpack.config.js",
-    "./nodeBuilder.js",
-    "./tmp/**/*"
+    "./.docker/**/*"
   ]
 }

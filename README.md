@@ -1,7 +1,7 @@
 ## SensorT - Simple Typescript Framework for Backend
 This framework was developed from Typescript to simplify backend implementations in node.js
 
-##### Version 1.0.1
+##### Version 1.1.0
 The framework is still under development, but already contains some interesting features:
 - Connection to mongodb with write and read management
 - Creation of models based on Classes
