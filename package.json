@@ -1,27 +1,27 @@
 {
     "name": "sensort",
-    "version": "1.1.5",
-    "bin": {
-        "sensort": "./bin/index.js"
+    "version": "1.8.1004",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "type": "commonjs",
+    "files": [
+        "dist"
+    ],  
+    "engines": {
+        "node": ">=16.20.1"
     },
     "scripts": {
         "configure": "npm install -y",
-        "build": "tsc",
+        "build": "tsup",
         "start": "ts-node-dev src/index.ts",
         "command": "ts-node-dev src/index.ts"
     },
     "dependencies": {
-        "@types/amqplib": "^0.10.5",
-        "@types/body-parser": "^1.19.2",
-        "@types/cookie-parser": "^1.4.3",
-        "@types/express": "^4.17.15",
-        "amqplib": "^0.10.4",
         "axios": "^1.6.8",
         "body-parser": "^1.20.2",
         "cookie-parser": "^1.4.6",
-        "cron": "^3.1.7",
+        "cron": "^3.5.0",
         "crypto": "^1.0.1",
-        "deep-diff": "^1.0.2",
         "dotenv": "^16.4.5",
         "express": "^4.19.1",
         "lodash": "^4.17.21",
@@ -32,24 +32,14 @@
         "uuid-token-generator": "^1.0.0"
     },
     "devDependencies": {
-        "@babel/core": "^7.21.8",
-        "@babel/preset-env": "^7.21.5",
-        "@babel/register": "^7.21.0",
+        "@swc/core": "^1.10.11",
+        "@types/body-parser": "^1.19.2",
+        "@types/cookie-parser": "^1.4.3",
+        "@types/express": "^4.17.15",
         "@types/node": "^20.2.5",
-        "@types/webpack-node-externals": "^3.0.4",
-        "babel-loader": "^9.1.2",
-        "babel-preset-env": "^0.0.0",
-        "esbuild": "^0.17.19",
-        "gulp": "^5.0.0",
-        "gulp-babel": "^8.0.0",
-        "gulp-concat": "^2.6.1",
-        "gulp-uglify": "^3.0.2",
-        "node-sass": "^8.0.0",
-        "ts-loader": "^9.4.2",
-        "typescript": "^5.0.4",
-        "webpack": "^5.83.1",
-        "webpack-cli": "^5.1.1",
-        "webpack-node-externals": "^3.0.0"
+        "rollup-plugin-dts": "^6.1.1",
+        "tsup": "^8.3.6",
+        "typescript": "^5.0.4"
     },
     "repository": {
         "type": "git",
@@ -60,6 +50,19 @@
         "framework"
     ],
     "author": "phtomic",
-    "license": "ISC",
-    "description": ""
+    "license": "MIT",
+    "description": "",
+    "tsd": {
+        "directory": "test/types",
+        "compilerOptions": {
+            "esModuleInterop": false,
+            "strict": true,
+            "allowSyntheticDefaultImports": true,
+            "strictPropertyInitialization": false,
+            "noImplicitAny": false,
+            "strictNullChecks": true,
+            "module": "commonjs",
+            "target": "ES2017"
+        }
+    }
 }
