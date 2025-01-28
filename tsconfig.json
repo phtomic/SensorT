@@ -11,6 +11,6 @@
     "moduleResolution": "node16",
     "allowSyntheticDefaultImports": true
   },
-  "include": ["src/index.ts","src"],
+  "include": ["src/index.ts","src","test.ts"],
   "exclude": ["bin", "dist", ".docker", "node_modules"]
 }

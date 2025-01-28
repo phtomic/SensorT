@@ -16,6 +16,7 @@ export function setStorage<T>(key, value): T {
   } catch (err) {}
   return rst!;
 }
+
 export function SessionStorage(cb: () => Promise<void>) {
   Session.run(new Map(), cb);
 }

@@ -7,14 +7,13 @@ export class LogsController {
     timeout: Date.now(),
     error: '',
   };
-  constructor(kernel: Kernel) {
+  constructor() {
     // Construtor da classe LogsController
     // Recebe uma instância de Models para acesso aos modelos de banco de dados
     this.logger = {};
     this.configLog('debug');
     this.configLog('info');
     this.configLog('error');
-    if (!kernel.isCommand)
       process
         .on('exit', (err) => this.exitHandler(err, { cleanup: true }, 'exit'))
         .on('SIGINT', (err) => this.exitHandler(err, {}, 'SIGINT'))
