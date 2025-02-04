@@ -1,5 +1,5 @@
 import { config } from 'dotenv';
-import { SetMigrationsPath } from '../Database/Domain/MigrationsController';
+import { SensortConfig, globalsConfig } from './Kernel';
 export const env = (...args: Array<string | any>) => {
   const cfg = config().parsed;
   const def = args.length > 1 ? args.pop() : null;
@@ -27,10 +27,8 @@ export class Globals {
 export const sleep_async = (ms) =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
-export type AppConfigTypes = "MIGRATIONS_PATH"
+export type AppConfigTypes = keyof SensortConfig
 export function UseConfig(config: AppConfigTypes, value: any){
-    switch(config){
-        case "MIGRATIONS_PATH":
-            SetMigrationsPath(value); break;
-    }
+    globalsConfig.sensortConfig = {} as any
+    globalsConfig.sensortConfig[config as string] = value
 }

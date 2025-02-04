@@ -1,16 +1,16 @@
-export const globalsWithCommands = global as typeof globalThis & {
-    sensortCommands: CommandList;
-};
 import { MigrationsController } from './MigrationsController';
 import { PackagesBuilder } from './PackagesBuilder';
-import { CommandList } from '../../App/Kernel';
+import { CommandList, } from '../../App/Kernel';
 import Crypt from '../../Plugins/Crypt';
+export const globalsConfig = global as typeof globalThis & {
+    sensortCommands: CommandList;
+}
 export const CreateCommand = (
     input: string,
     callback: (...command) => Promise<any>,
 ) => {
-    globalsWithCommands.sensortCommands[input] = async (...command) =>
-        callback(...command);
+    if(!globalsConfig.sensortCommands) globalsConfig.sensortCommands = {}
+    globalsConfig.sensortCommands[input] = async (...command) => callback(...command);
 };
 export class Builder {
     public stopServe = false;
@@ -18,14 +18,12 @@ export class Builder {
     public isCommand = false;
     public prepareAction(command: any[]) {
         const commandsListFull: CommandList = {
-            ...globalsWithCommands.sensortCommands,
+            ...globalsConfig.sensortCommands,
             'prepare:packages': async () => new PackagesBuilder().prepare(),
             'db:migrate': async () => new MigrationsController().execMigrations(),
             'clean:dist': async () => new MigrationsController().clean_migrations(),
-            'prepare:dist': async () =>
-                new MigrationsController().prepare_migrations(),
-            migration: async () =>
-                new MigrationsController().createMigration(command[1]),
+            'prepare:dist': async () => new MigrationsController().prepare_migrations(),
+            'migration': async () => new MigrationsController().createMigration(command[1]),
             'key:make': async () => Crypt.generateKey(true),
         };
         if (command[0] !== undefined && !command[0].startsWith('--')) {

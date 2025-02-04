@@ -10,12 +10,17 @@ import mongoose, {
     SchemaDefinitionType,
     Types,
     PopulateOptions,
+    Connection,
 } from 'mongoose';
-import { Schema } from 'mongoose';
 import DatabaseSchemaPlugin, {
     ConnectDatabase,
-    globalsWithMongoose,
 } from './DatabaseSchemaPlugin';
+import { Schema } from 'mongoose';
+export const globalsDatabase= global as typeof globalThis & {
+    mongooseConnections: { [x: string]: Connection; };
+    mongooseSchemas: { [x: string]: Schema<any>; };
+    databaseConnections: { [x: string]: DbConnectionConfig; };
+}
 export type DbConnectionConfig = {
     username?: string;
     password?: string;
@@ -61,26 +66,25 @@ export default class BaseModel<T, ModelMethods = {}> {
     protected readonly beforeSave?: (dados: any) => any;
     protected readonly listeners!: BaseModelListener;
     protected readonly populate: DefPopulateOptions<T> = [];
-
     protected collection(
         connection?: DBConnectionPool,
     ): ModelType<T, ModelMethods> {
         if (!connection) {
-            const tmp = Object.keys(globalsWithMongoose.databaseConnections)
+            const tmp = Object.keys(globalsDatabase.databaseConnections)
                 .map((key) => ({
                     key,
-                    ...globalsWithMongoose.databaseConnections[key],
+                    ...globalsDatabase.databaseConnections[key],
                 }))
                 .sort((a, b) => (a.priority || 0) - (b.priority || 0));
             const firstDefault = tmp.find((conn) => conn.default == true);
             connection = firstDefault ? firstDefault.key : tmp[0].key;
         }
         const conn = ConnectDatabase(connection!);
-        Object.keys(globalsWithMongoose.mongooseSchemas).forEach((schema_name) => {
+        Object.keys(globalsDatabase.mongooseSchemas).forEach((schema_name) => {
             if (!conn.models[schema_name])
                 conn.model(
                     schema_name,
-                    globalsWithMongoose.mongooseSchemas[schema_name],
+                    globalsDatabase.mongooseSchemas[schema_name],
                 );
         });
         return conn.models[this.collection_name] as ModelType<T, ModelMethods>;
@@ -96,9 +100,9 @@ export default class BaseModel<T, ModelMethods = {}> {
     }
 
     private configureSchemas(methods: any[]) {
-        if (!globalsWithMongoose.mongooseSchemas)
-            globalsWithMongoose.mongooseSchemas = {};
-        if (globalsWithMongoose.mongooseSchemas[this.collection_name]) return;
+        if (!globalsDatabase.mongooseSchemas)
+            globalsDatabase.mongooseSchemas = {};
+        if (globalsDatabase.mongooseSchemas[this.collection_name]) return;
         const nSchema = new mongoose.Schema<T>({
             ...this.fields,
             created: Date,
@@ -113,7 +117,7 @@ export default class BaseModel<T, ModelMethods = {}> {
             .forEach((k: any) =>
                 nSchema.static(k[0], (...args: any) => k[1](...args)),
             );
-        globalsWithMongoose.mongooseSchemas[this.collection_name] = nSchema;
+        globalsDatabase.mongooseSchemas[this.collection_name] = nSchema;
     }
 
     public isEmpty() {
@@ -170,7 +174,7 @@ export default class BaseModel<T, ModelMethods = {}> {
 }
 
 export const DbConnection = (type: string, cb: () => DbConnectionConfig) => {
-    if(!globalsWithMongoose.databaseConnections) globalsWithMongoose.databaseConnections = {}
-    globalsWithMongoose.databaseConnections[type] = cb();
+    if(!globalsDatabase.databaseConnections) globalsDatabase.databaseConnections = {}
+    globalsDatabase.databaseConnections[type] = cb();
     return true;
 };

@@ -1,92 +1,72 @@
-import { Kernel } from './Kernel';
-import { concat } from 'lodash';
+
+import { appendFile, appendFileSync, exists, existsSync, writeFile, writeFileSync } from 'fs';
+import { response } from '.';
+import { getStorage } from '../Routing/Plugins/SessionStorage';
+import { globalsConfig } from './Kernel';
+import { parseDate } from '../Plugins/DateParser';
 export class LogsController {
-  private logger: any;
-  private ignoredErrors = ['EPIPE', 'ERR_IPC_CHANNEL_CLOSED'];
-  private lastErrorLog = {
-    timeout: Date.now(),
-    error: '',
-  };
-  constructor() {
-    // Construtor da classe LogsController
-    // Recebe uma instância de Models para acesso aos modelos de banco de dados
-    this.logger = {};
-    this.configLog('debug');
-    this.configLog('info');
-    this.configLog('error');
-      process
-        .on('exit', (err) => this.exitHandler(err, { cleanup: true }, 'exit'))
-        .on('SIGINT', (err) => this.exitHandler(err, {}, 'SIGINT'))
-        .on('SIGUSR1', (err) => this.exitHandler(err, {}, 'SIGUSR1'))
-        .on('SIGUSR2', (err) => this.exitHandler(err, {}, 'SIGUSR2'))
-        .on('uncaughtException', (err) =>
-          this.exitHandler(err, {}, 'uncaughtException'),
-        );
-  }
-  private exitHandler(message: any, options: any, origin: string) {
-    if (
-      this.ignoredErrors
-        .map((error) => message.toString().includes(error))
-        .includes(true)
-    )
-      return true;
-    let errorLog = '';
-    if (options.cleanup) {
-      errorLog = 'Desligamento do sistema - '.concat(message.toString());
-    } else {
-      errorLog = message.toString();
+    private logger: any;
+    private ignoredErrors = ['EPIPE', 'ERR_IPC_CHANNEL_CLOSED'];
+    constructor() {
+        // Construtor da classe LogsController
+        // Recebe uma instância de Models para acesso aos modelos de banco de dados
+        this.logger = {};
+        this.configLog('debug');
+        this.configLog('info');
+        this.configLog('error');
+        this.configure();
+
     }
-    errorLog = errorLog.concat(' (', origin, ')');
-    if (
-      this.lastErrorLog.error !== errorLog ||
-      this.lastErrorLog.timeout < Date.now() + 100
-    ) {
-      this.lastErrorLog = {
-        timeout: Date.now() + 2000,
-        error: errorLog,
-      };
-      this.logger['info'](
-        `${errorLog} # ${message.stack}`,
-        { errorOrigin: origin },
-        'process',
-      );
+    private configure(listener: string = '') {
+        if (listener == 'uncaughtException' || listener == '') 
+            process.once('uncaughtException', async (err) => this.exitHandler(err, { cleanup: true }, 'uncaughtException'))
+        if (listener == 'exit' || listener == '') 
+            process.once('exit', async (err) => this.exitHandler(err, { cleanup: true }, 'exit'))
     }
-  }
-  private async configLog(type: string) {
-    // Função privada para configurar o registro de log de um determinado tipo
-    // Recebe o tipo de log como parâmetro
-    if (!this.logger[type]) {
-      // Verifica se o tipo de log já foi configurado
-      this.logger[type] = async (
-        message: any,
-        optionalParams?: {
-          errorOrigin?: string;
-        },
-        controller: string = 'app',
-        priority: number = 0,
-      ) => {
-        if (message.replace)
-          message = message.replace(new RegExp(`${process.cwd()}/`, 'g'), '');
+    private async exitHandler(message: any, options: any, origin: string) {
+        this.configure(origin);
+        try {
+            if (getStorage('response') && !response().headersSent) {
+                response().status(500).send(message);
+            }
+        } catch (err) { }
         if (
-          optionalParams?.errorOrigin &&
-          optionalParams?.errorOrigin !== 'uncaughtException'
-        )
-          process.exit();
-        // Sobrescreve a função de console[type] para registrar o log
-        console.log(
-          concat(
-            '[',
-            controller.toUpperCase(),
-            ']',
-            ' PRIOR: ',
-            priority.toString(),
-            ' - ',
-            message,
-          ).join(''),
+            this.ignoredErrors.map((error) => message.toString().includes(error)).includes(true)
+        ) return true;
+        const errorLog = (options.cleanup && !globalsConfig.sensortConfig.failKeepAlive) ? `Shutdown - ${message.toString() || origin.toUpperCase()}` : message.toString();
+        this.logger.error(
+            `${errorLog} ( ${origin} ) # ${message.stack}`,
+            { errorOrigin: origin },
+            'process',
         );
-        // Cria uma nova instância do modelo de Logs e salva o log no banco de dados
-      };
-      console[type] = this.logger[type];
+        if (options.cleanup && !globalsConfig.sensortConfig.failKeepAlive) process.exit();
     }
-  }
+    private async configLog(type: string) {
+        // Função privada para configurar o registro de log de um determinado tipo
+        // Recebe o tipo de log como parâmetro
+        if (!this.logger[type]) {
+            // Verifica se o tipo de log já foi configurado
+            this.logger[type] = async (
+                message: any,
+                optionalParams?: {
+                    errorOrigin?: string;
+                },
+                controller: string = 'app',
+                priority: number = 0,
+            ) => {
+                if (message.replace)
+                    message = message.replace(new RegExp(`${process.cwd()}/`, 'g'), '');
+                // Sobrescreve a função de console[type] para registrar o log
+                const log = `[${new Date().toISOString()}] (${controller.toLowerCase()}) PRIOR: ${priority.toString()} - ${message}`
+                console.log(log);
+                if (globalsConfig.sensortConfig.logsPath) {
+                    const path = `${globalsConfig.sensortConfig.logsPath}${type}.${parseDate('Y_m_d')}.log`
+                    if(!existsSync(path)) writeFileSync(path, `${log}\r\n`, {encoding: 'utf-8'})
+                    else appendFileSync(path, `${log}\r\n`)
+                }
+                // Cria uma nova instância do modelo de Logs e salva o log no banco de dados
+            };
+            console[type] = this.logger[type];
+        }
+    }
 }

@@ -1,6 +1,6 @@
 {
     "name": "sensort",
-    "version": "1.8.1011",
+    "version": "1.9.1003",
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
     "type": "commonjs",
@@ -14,7 +14,8 @@
         "configure": "npm install -y",
         "build": "tsup",
         "start": "ts-node-dev test.ts",
-        "command": "ts-node-dev test.ts"
+        "command": "ts-node-dev test.ts",
+        "release": "npm run build && npm publish"
     },
     "dependencies": {
         "axios": "^1.6.8",
