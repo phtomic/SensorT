@@ -1,0 +1,35 @@
+{
+    "name": "sensort",
+    "version": "2.1.0001",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "type": "commonjs",
+    "files": [
+        "dist"
+    ],  
+    "engines": {
+        "node": ">=16.20.1"
+    },
+    "scripts": {
+        "build": "npm publish"
+    },
+    "dependencies": {
+        "sensort-app": "^1.0.4",
+        "sensort-session": "^1.0.3",
+        "sensort-routing": "^1.0.3",
+        "sensort-plugins": "^1.0.3",
+        "sensort-database": "^1.0.3"
+    },
+    "devDependencies": {},
+    "repository": {
+        "type": "git",
+        "url": "github.com/phtomic/SensorT"
+    },
+    "keywords": [
+        "typescrint",
+        "framework"
+    ],
+    "author": "phtomic",
+    "license": "MIT",
+    "description": ""
+}
