@@ -1,0 +1,14 @@
+{
+  "name": "sensort",
+  "version": "1.9.0",
+  "bin": "index.js",
+  "scripts": {
+    "build": "npm publish --access public"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "dotenv": "^16.4.7"
+  }
+}

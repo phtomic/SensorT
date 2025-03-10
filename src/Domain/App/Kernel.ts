@@ -11,7 +11,8 @@ export class Kernel {
     constructor() {
         Kernel.setDefaultConfigs()
         new LogsController()
-        const command = process.argv.slice(2);
+        const nodeArgs = new Set(process.execArgv);
+        const command = process.argv.slice(2).filter(arg => !nodeArgs.has(arg));
         const builder = new Builder();
         builder.prepareAction(command);
     }

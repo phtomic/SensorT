@@ -1,6 +1,4 @@
-export type RegexMatchedString<Pattern extends RegExp> = string & {
-    __pattern: Pattern;
-};
+export type RegexMatchedString<Pattern extends string> = `${string & { __brand: Pattern }}`;
 export type CommandList = {
     [x: string]: () => Promise<any>;
 };

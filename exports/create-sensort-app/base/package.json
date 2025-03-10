@@ -1,0 +1,26 @@
+{
+  "name": "sensort_app_name",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "scripts": {
+    "start": "ts-node-dev index.ts",
+    "build": "tsc"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.8.2"
+  },
+  "dependencies": {
+    "@sensort/common": "^1.0.1",
+    "@sensort/core": "^1.0.1",
+    "@sensort/cron": "^1.0.0",
+    "@sensort/mongoose": "^1.0.1",
+    "@sensort/router": "^1.0.0",
+    "@sensort/session": "^1.0.0",
+    "mongoose": "^8.12.1"
+  }
+}

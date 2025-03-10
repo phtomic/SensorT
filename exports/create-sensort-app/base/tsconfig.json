@@ -11,8 +11,9 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "removeComments": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "paths": { "@/*": ["./src/*"] }
   },
-  "include": ["src/**/*", "src/**/*.json", "exports"],
-  "exclude": ["exports/bin", "dist", ".docker", "node_modules", "tests"]
+  "include": ["src/**/*", "src/**/*.json"],
+  "exclude": ["dist", "node_modules", "tests"]
 }

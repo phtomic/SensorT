@@ -20,6 +20,7 @@ export async function mapAsync<T>(
   }
   return array;
 }
+
 export class Globals {
   constructor() {}
 }

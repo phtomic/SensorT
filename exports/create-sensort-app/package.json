@@ -1,0 +1,11 @@
+{
+    "name": "create-sensort-app",
+    "version": "1.0.6",
+    "bin": "./index.js",
+    "scripts": {
+        "build": "npm publish --access public"
+    },
+    "author": "",
+    "license": "ISC",
+    "description": ""
+}
